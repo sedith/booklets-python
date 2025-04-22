@@ -45,7 +45,7 @@ if __name__ == '__main__':
     pages = pages[:,:,[2,0,3,1]]
     new_pages_idx = pages.reshape(-1)
 
-    ## create reordered pdf_in
+    ## reordered pdf
     writer = PdfWriter()
     idx = 0
     while idx < len(new_pages_idx):
