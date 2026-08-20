@@ -10,7 +10,8 @@ if __name__ == '__main__':
     parser.add_argument(dest='booklet_size', type=int, help='number of pages per booklet (must be divisible by 4)')
     parser.add_argument('-o', dest='output_file', default='', type=str, help='ouput file name')
     parser.add_argument('-f', dest='output_format', default='A4', type=str, choices=['A3', 'A4'], help='outfile file format')
-    parser.add_argument('-b', dest='add_blank', default=0, type=int, help='number of blank pages to add before the document')
+    parser.add_argument('-b', dest='blank_before', default=0, type=int, help='number of blank pages to add before the document')
+    parser.add_argument('-a', dest='blank_after', default=0, type=int, help='number of blank pages to add after the document')
     parser.add_argument('-l', dest='rectoverso_long', action='store_true', help='recto-verso on long side instead of short side')
     args = parser.parse_args()
 
@@ -29,8 +30,9 @@ if __name__ == '__main__':
     pages_idx = np.array(range(len(pdf_in.pages)))
 
     ## add blank pages
-    for i in range(args.add_blank):
+    for i in range(args.blank_before):
         pages_idx = np.insert(pages_idx, 0, -1)
+    for i in range(args.blank_after):
         pages_idx = np.append(pages_idx, -1)
 
     ## fill last booklet
@@ -38,10 +40,10 @@ if __name__ == '__main__':
         pages_idx = np.append(pages_idx, -1)
 
     ## reorder pages
-    pages = np.array(pages_idx).reshape((-1,int(args.booklet_size/2),2))
-    pages[:,:,1] = np.flip(pages[:,:,1],1)
-    pages[:,int(args.booklet_size/4):,:] = np.flip(pages[:,int(args.booklet_size/4):,:],1)
-    pages = pages.reshape((-1,int(args.booklet_size/4),4), order='F')
+    pages = np.array(pages_idx).reshape((-1, int(args.booklet_size / 2), 2))
+    pages[:,:,1] = np.flip(pages[:,:,1], 1)
+    pages[:,int(args.booklet_size/4):,:] = np.flip(pages[:, int(args.booklet_size / 4):,:], 1)
+    pages = pages.reshape((-1, int(args.booklet_size / 4), 4), order='F')
     pages = pages[:,:,[2,0,3,1]]
     new_pages_idx = pages.reshape(-1)
 
